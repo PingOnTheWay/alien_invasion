@@ -8,7 +8,9 @@ class Ship:
         self.screen_rect = ai_game.screen.get_rect()
 
         '''load the image of ships'''
-        self.image = pygame.image.load('images/ship.bmp')
+        self.image = pygame.image.load('images/ship.bmp').convert()
+        # make image background transparent
+        self.image.set_colorkey((230, 230, 230))
         self.rect = self.image.get_rect()
 
         '''place every new ship at the bottom center of the screen'''
