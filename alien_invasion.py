@@ -3,6 +3,7 @@ from settings import Settings
 from ship import Ship
 from dog import Dog
 from bullet import Bullet
+from alien import Alien
 
 class AlienInvasion:
     def __init__(self) -> None:
@@ -15,6 +16,8 @@ class AlienInvasion:
         self.ship = Ship(self)
         self.dog = Dog(self)
         self.bullets = pygame.sprite.Group()
+        self.aliens = pygame.sprite.Group()
+        self._create_fleet()
 
     
     def run_game(self):
@@ -61,13 +64,25 @@ class AlienInvasion:
         elif event.key == pygame.K_LEFT:
             self.ship.moving_left = False
 
-    
+    def _create_fleet(self):
+        '''create aliens'''
+        alien = Alien(self)
+        alien_width = alien.rect.width
+        number_aliens_x = self.settings.screen_width // (2 * alien_width)
+        for num in range(number_aliens_x):
+            alien = Alien(self)
+            alien.x = alien_width + 2 * alien_width * num
+            alien.rect.x = alien.x
+            self.aliens.add(alien)
+
     def _update_screen(self):
         '''redraw the screen each loop
         Make the most recently drawn screen visible'''
         self.screen.fill(self.settings.bg_color)
         self.ship.blitme()
         self.dog.blitme()
+        # self.alien.blitme()
+        self.aliens.draw(self.screen)
         for bullet in self.bullets.sprites():
             bullet.draw_bullet()
         pygame.display.flip()
