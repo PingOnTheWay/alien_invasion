@@ -27,8 +27,26 @@ class AlienInvasion:
             self._check_events()
             self.ship.update()
             self._update_bullets()
+            self._update_aliens()
             # update the screen
             self._update_screen()
+    
+    def _update_aliens(self):
+        self._check_fleet_edges()
+        self.aliens.update()
+
+    def _check_fleet_edges(self):
+        '''check weather aliens reach edges'''
+        for alien in self.aliens.sprites():
+            if alien.check_edges():
+                self._change_fleet_direction()
+                break
+
+    def _change_fleet_direction(self):
+        '''move the whole fleet down and change the moving direction'''
+        for alien in self.aliens.sprites():
+            alien.rect.y += self.settings.fleet_drop_speed
+        self.settings.alien_speed *= -1
     
     def _update_bullets(self):
         '''update bullet location'''
@@ -67,13 +85,21 @@ class AlienInvasion:
     def _create_fleet(self):
         '''create aliens'''
         alien = Alien(self)
-        alien_width = alien.rect.width
-        number_aliens_x = self.settings.screen_width // (2 * alien_width)
-        for num in range(number_aliens_x):
-            alien = Alien(self)
-            alien.x = alien_width + 2 * alien_width * num
-            alien.rect.x = alien.x
-            self.aliens.add(alien)
+        number_aliens_x = self.settings.screen_width // (2 * alien.rect.width)
+        number_aliens_y = (self.settings.screen_height - self.ship.rect.height - 
+            3 * alien.rect.height) // (2 * alien.rect.height)
+        for row in range(number_aliens_y):
+            for num in range(number_aliens_x):
+                self._creat_alien(num, row)
+            
+
+    def _creat_alien(self, number, row):
+        alien = Alien(self)
+        alien.x = alien.rect.width + 2 * alien.rect.width * number
+        alien.y = alien.rect.height + 2 * alien.rect.height * row
+        alien.rect.x = alien.x
+        alien.rect.y = alien.y
+        self.aliens.add(alien)
 
     def _update_screen(self):
         '''redraw the screen each loop
