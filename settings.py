@@ -7,7 +7,10 @@ class Settings:
         self.screen_width = 1200
         self.screen_height = 800
         self.bg_color = (135,206,250)
-        self.ship_speed = 2.2
+
+        # ship
+        self.ship_speed = 2.4
+        self.ship_limit = 3
 
         # bullets
         self.bullet_speed = 3.0
@@ -18,7 +21,7 @@ class Settings:
 
         # alien
         self.alien_speed = 1.0
-        self.fleet_drop_speed = 10
+        self.fleet_drop_speed = 100
         # -1: move left; 1: move right
         self.fleet_direction = -1
     
