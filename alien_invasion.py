@@ -7,6 +7,7 @@ from dog import Dog
 from bullet import Bullet
 from alien import Alien
 from game_stats import GameStats
+from button import Button
 
 class AlienInvasion:
     def __init__(self) -> None:
@@ -25,6 +26,7 @@ class AlienInvasion:
         self.bullets = pygame.sprite.Group()
         self.aliens = pygame.sprite.Group()
         self._create_fleet()
+        self.button = Button(self, "Play")
 
     
     def run_game(self):
@@ -37,7 +39,7 @@ class AlienInvasion:
                 self._update_bullets()
                 self._update_aliens()
                 # update the screen
-                self._update_screen()
+            self._update_screen()
 
     def _ship_hit(self):
         '''response to spaceship being hit by aliens'''
@@ -115,6 +117,20 @@ class AlienInvasion:
                 self._check_keydown(event)
             elif event.type == pygame.KEYUP:
                 self._check_keyup(event)
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                mouse_pos = pygame.mouse.get_pos()
+                self._check_play_button(mouse_pos)
+    
+    def _check_play_button(self, mouse_pos):
+        if self.button.rect.collidepoint(mouse_pos):
+            self.game_stats.game_active = True
+            self.game_stats.reset_stats()
+
+            self.aliens.empty()
+            self.bullets.empty()
+
+            self._create_fleet()
+            self.ship.center_ship()
         
     def _check_keydown(self,event):
         if event.key == pygame.K_RIGHT:
@@ -162,6 +178,9 @@ class AlienInvasion:
         self.aliens.draw(self.screen)
         for bullet in self.bullets.sprites():
             bullet.draw_bullet()
+
+        if not self.game_stats.game_active:
+            self.button.draw_button()
         pygame.display.flip()
         
 if __name__ == "__main__":
