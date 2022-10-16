@@ -1,3 +1,4 @@
+import math
 import sys, pygame
 
 from time import sleep
@@ -26,8 +27,16 @@ class AlienInvasion:
         self.bullets = pygame.sprite.Group()
         self.aliens = pygame.sprite.Group()
         self._create_fleet()
-        self.button = Button(self, "Play")
+        self.buttons = list()
+        self._create_buttons()
 
+    def _create_buttons(self):
+        for i in range(4):
+            if i == 0:
+                self.buttons.append(Button(self, "Play"))
+            else:
+                button = Button(self, f"level {i}", i)
+                self.buttons.append(button)
     
     def run_game(self):
         '''start the main function of the game'''
@@ -122,14 +131,21 @@ class AlienInvasion:
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_pos = pygame.mouse.get_pos()
                 self._check_play_button(mouse_pos)
+                self._check_level_buttons(mouse_pos)                    
+
+    def _check_level_buttons(self, mouse_pos):
+        for i in range(1,4):
+            if self.buttons[i].rect.collidepoint(mouse_pos) and not \
+                self.game_stats.game_active:
+                    self.settings.level = math.sqrt(i)
     
     def _check_play_button(self, mouse_pos):
         # the new game starts only when the player clicks the button and the 
         # game is not active
-        if self.button.rect.collidepoint(mouse_pos) and not \
+        if self.buttons[0].rect.collidepoint(mouse_pos) and not \
             self.game_stats.game_active:
-                self._start_game()
                 self.settings.initialize_dynamic_settings()
+                self._start_game()
     
     def _start_game(self):
         self.game_stats.game_active = True
@@ -155,8 +171,14 @@ class AlienInvasion:
             if len(self.bullets) < self.settings.bullet_allowed:
                 self.bullets.add(Bullet(self))
         elif event.key == pygame.K_p:
-            self._start_game()
             self.settings.initialize_dynamic_settings()
+            self._start_game()
+        elif event.key == pygame.K_ESCAPE:
+            pygame.mouse.set_visible(True)
+            self.game_stats.game_active = False
+        elif event.key == pygame.K_r:
+            pygame.mouse.set_visible(False)
+            self.game_stats.game_active = True
 
     def _check_keyup(self, event):
         if event.key == pygame.K_RIGHT:
@@ -195,7 +217,8 @@ class AlienInvasion:
             bullet.draw_bullet()
 
         if not self.game_stats.game_active:
-            self.button.draw_button()
+            for button in self.buttons:
+                button.draw_button()
         pygame.display.flip()
         
 if __name__ == "__main__":
