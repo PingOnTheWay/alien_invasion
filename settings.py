@@ -21,7 +21,25 @@ class Settings:
 
         # alien
         self.alien_speed = 1.0
-        self.fleet_drop_speed = 50
+        self.fleet_drop_speed = 8
         # -1: move left; 1: move right
         self.fleet_direction = -1
+
+        # game tempo
+        self.speedup_scale = 1.1
+
+        self.initialize_dynamic_settings()
     
+    def initialize_dynamic_settings(self):
+        '''init speed settingss'''
+        self.ship_speed = 3.0
+        self.bullet_speed = 3.0
+        self.alien_speed = 1.0
+        self.fleet_direction = -1
+    
+    def speedup(self):
+        '''accelerate'''
+        self.ship_speed *= self.speedup_scale
+        self.bullet_speed *= self.speedup_scale
+        self.alien_speed *= self.speedup_scale
+

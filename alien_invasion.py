@@ -108,6 +108,7 @@ class AlienInvasion:
         if not self.aliens:
             self.bullets.empty()
             self._create_fleet()
+            self.settings.speedup()
     
     def _check_events(self):
         '''monitor mouse and keyboard events'''
@@ -128,6 +129,7 @@ class AlienInvasion:
         if self.button.rect.collidepoint(mouse_pos) and not \
             self.game_stats.game_active:
                 self._start_game()
+                self.settings.initialize_dynamic_settings()
     
     def _start_game(self):
         self.game_stats.game_active = True
@@ -154,6 +156,7 @@ class AlienInvasion:
                 self.bullets.add(Bullet(self))
         elif event.key == pygame.K_p:
             self._start_game()
+            self.settings.initialize_dynamic_settings()
 
     def _check_keyup(self, event):
         if event.key == pygame.K_RIGHT:
