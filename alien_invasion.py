@@ -57,6 +57,7 @@ class AlienInvasion:
 
         # ship - 1
         self.game_stats.ships_left -= 1
+        self.scoreboard.prep_ships()
         if self.game_stats.ships_left < 1:
             self.game_stats.game_active = False
             pygame.mouse.set_visible(True)
@@ -72,6 +73,10 @@ class AlienInvasion:
             # pause
             sleep(1)
 
+    def _save_high_score(self):
+        file = open("data.txt", "w", encoding="UTF-8")
+        file.write(str(self.game_stats.high_score))
+        file.close()
     
     def _update_aliens(self):
         self._check_fleet_edges()
@@ -133,6 +138,7 @@ class AlienInvasion:
         '''monitor mouse and keyboard events'''
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
+                self._save_high_score()
                 sys.exit()
             elif event.type == pygame.KEYDOWN:
                 self._check_keydown(event)
@@ -162,6 +168,7 @@ class AlienInvasion:
         self.game_stats.reset_stats()
         self.scoreboard.prep_score()
         self.scoreboard.prep_level()
+        self.scoreboard.prep_ships()
 
         self.aliens.empty()
         self.bullets.empty()
@@ -178,6 +185,7 @@ class AlienInvasion:
         elif event.key == pygame.K_LEFT:
             self.ship.moving_left = True
         elif event.key == pygame.K_q:  # enter 'q' for quit
+            self._save_high_score()
             sys.exit()
         elif event.key == pygame.K_SPACE:
             if len(self.bullets) < self.settings.bullet_allowed:
