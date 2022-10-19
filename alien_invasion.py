@@ -127,12 +127,15 @@ class AlienInvasion:
 
         # if all aliens were killed, generate a new fleet
         if not self.aliens:
-            self.bullets.empty()
-            self._create_fleet()
-            self.settings.speedup()
+            self._start_new_level()
+        
+    def _start_new_level(self):
+        self.bullets.empty()
+        self._create_fleet()
+        self.settings.speedup()
 
-            self.game_stats.level += 1
-            self.scoreboard.prep_level()
+        self.game_stats.level += 1
+        self.scoreboard.prep_level()
     
     def _check_events(self):
         '''monitor mouse and keyboard events'''
@@ -166,9 +169,7 @@ class AlienInvasion:
     def _start_game(self):
         self.game_stats.game_active = True
         self.game_stats.reset_stats()
-        self.scoreboard.prep_score()
-        self.scoreboard.prep_level()
-        self.scoreboard.prep_ships()
+        self.scoreboard.prep_images()
 
         self.aliens.empty()
         self.bullets.empty()
