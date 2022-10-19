@@ -13,6 +13,7 @@ from scoreboard import Scoreboard
 from shield import Shield
 from random import random
 from alien_bullet import AlienBullet
+import sound_effect
 
 class AlienInvasion:
     def __init__(self) -> None:
@@ -50,7 +51,7 @@ class AlienInvasion:
             else:
                 button = Button(self, f"level {i}", i)
                 self.buttons.append(button)
-    
+        
     def run_game(self):
         '''start the main function of the game'''
         while True:
@@ -67,6 +68,7 @@ class AlienInvasion:
 
     def _ship_hit(self):
         '''response to spaceship being hit by aliens'''
+        sound_effect.explosion.play()
 
         # ship - 1
         self.game_stats.ships_left -= 1
@@ -151,6 +153,7 @@ class AlienInvasion:
         collisions = pygame.sprite.groupcollide(self.aliens, self.bullets, True,
             False)
         if collisions:
+            sound_effect.explosion.play()
             self.game_stats.score += self.settings.alien_points * len(collisions)
             self.scoreboard.prep_score()
             self.scoreboard.check_hight_score()
@@ -188,6 +191,7 @@ class AlienInvasion:
             if self.buttons[i].rect.collidepoint(mouse_pos) and not \
                 self.game_stats.game_active:
                     self.settings.level = math.sqrt(i)
+                    self.settings.level_flag = i
     
     def _check_play_button(self, mouse_pos):
         # the new game starts only when the player clicks the button and the 
@@ -209,6 +213,8 @@ class AlienInvasion:
         self._create_fleet()
         self.ship.center_ship()
 
+        pygame.mixer.music.unpause()
+
         # hide mouse
         pygame.mouse.set_visible(False)
         
@@ -223,15 +229,18 @@ class AlienInvasion:
         elif event.key == pygame.K_SPACE:
             if len(self.bullets) < self.settings.bullet_allowed:
                 self.bullets.add(Bullet(self))
+                sound_effect.laser.play()
         elif event.key == pygame.K_p:
             self.settings.initialize_dynamic_settings()
             self._start_game()
         elif event.key == pygame.K_ESCAPE:
             pygame.mouse.set_visible(True)
             self.game_stats.game_active = False
+            pygame.mixer.music.pause()
         elif event.key == pygame.K_r:
             pygame.mouse.set_visible(False)
             self.game_stats.game_active = True
+            pygame.mixer.music.unpause()
 
     def _check_keyup(self, event):
         if event.key == pygame.K_RIGHT:

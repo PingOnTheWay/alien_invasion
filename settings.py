@@ -32,6 +32,7 @@ class Settings:
         # game tempo
         self.speedup_scale = 1.1
         self.level = 1.0
+        self.level_flag = 1
 
         # shield
         self.shield_color = (227,207,87)

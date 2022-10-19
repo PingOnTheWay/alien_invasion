@@ -21,6 +21,14 @@ class Scoreboard:
         self.prep_high_score()
         self.prep_level()
         self.prep_ships()
+        self.prep_difficulty()
+
+    def prep_difficulty(self):
+        self.difficulty_image = self.font.render(f"Level: {self.settings.level_flag}",
+            True, self.text_color)
+        self.difficulty_rect = self.difficulty_image.get_rect()
+        self.difficulty_rect.right = self.screen_rect.right - 10
+        self.difficulty_rect.top = 10
 
     def prep_ships(self):
         '''show how many ships are still left'''
@@ -47,6 +55,7 @@ class Scoreboard:
         self.screen.blit(self.level_image,self.level_rect)
         if self.game_stats.game_active:
             self.ships.draw(self.screen)
+            self.screen.blit(self.difficulty_image, self.difficulty_rect)
 
     def prep_high_score(self):
         self.high_score_image = self.font.render(str(self.game_stats.high_score),
