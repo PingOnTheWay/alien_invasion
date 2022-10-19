@@ -10,6 +10,9 @@ from alien import Alien
 from game_stats import GameStats
 from button import Button
 from scoreboard import Scoreboard
+from shield import Shield
+from random import random
+from alien_bullet import AlienBullet
 
 class AlienInvasion:
     def __init__(self) -> None:
@@ -25,12 +28,20 @@ class AlienInvasion:
         self.scoreboard = Scoreboard(self)
 
         self.ship = Ship(self)
+        self.shield = Shield(self)
         self.dog = Dog(self)
         self.bullets = pygame.sprite.Group()
         self.aliens = pygame.sprite.Group()
         self._create_fleet()
+        self.aliens_bullets = pygame.sprite.Group()
         self.buttons = list()
         self._create_buttons()
+
+    def aliens_shoot(self):
+        for alien in self.aliens.sprites():
+            if random() < self.settings.shoot_frequency:
+                alien_bullet = AlienBullet(self, alien)
+                self.aliens_bullets.add(alien_bullet)
 
     def _create_buttons(self):
         for i in range(4):
@@ -47,8 +58,10 @@ class AlienInvasion:
             self._check_events()
             if self.game_stats.game_active:
                 self.ship.update()
+                self.shield.update_shield(self)
                 self._update_bullets()
                 self._update_aliens()
+                self._update_alien_bullets()
                 # update the screen
             self._update_screen()
 
@@ -65,6 +78,7 @@ class AlienInvasion:
             # clear all rest aliens and bullets
             self.aliens.empty()
             self.bullets.empty()
+            self.aliens_bullets.empty()
 
             # create a new fleet of aliens and place ship back to the postions
             self._create_fleet()
@@ -81,6 +95,7 @@ class AlienInvasion:
     def _update_aliens(self):
         self._check_fleet_edges()
         self.aliens.update()
+        self.aliens_shoot()
 
         # check whether there are collisions between aliens and ship
         if pygame.sprite.spritecollideany(self.ship, self.aliens):
@@ -116,6 +131,21 @@ class AlienInvasion:
         # check if aliens are shoot
         self.__check_bullets_aliens_collisions()
 
+    def _update_alien_bullets(self):
+        self.aliens_bullets.update()
+        for bullet in self.aliens_bullets.copy():
+            if bullet.rect.bottom > self.screen.get_rect().bottom:
+                self.aliens_bullets.remove(bullet)
+        self._check_alien_shoot()
+
+
+    def _check_alien_shoot(self):
+        pygame.sprite.spritecollide(self.shield, self.aliens_bullets, True)
+
+        if pygame.sprite.spritecollideany(self.ship, self.aliens_bullets):
+            self._ship_hit()
+            
+
     def __check_bullets_aliens_collisions(self):
         # remove bullets and aliens with collison
         collisions = pygame.sprite.groupcollide(self.aliens, self.bullets, True,
@@ -131,6 +161,7 @@ class AlienInvasion:
         
     def _start_new_level(self):
         self.bullets.empty()
+        self.aliens_bullets.empty()
         self._create_fleet()
         self.settings.speedup()
 
@@ -173,6 +204,7 @@ class AlienInvasion:
 
         self.aliens.empty()
         self.bullets.empty()
+        self.aliens_bullets.empty()
 
         self._create_fleet()
         self.ship.center_ship()
@@ -236,12 +268,17 @@ class AlienInvasion:
         self.aliens.draw(self.screen)
         for bullet in self.bullets.sprites():
             bullet.draw_bullet()
+
+        for bullet in self.aliens_bullets.sprites():
+            bullet.draw_bullet()
         
         self.scoreboard.show_score()
 
         if not self.game_stats.game_active:
             for button in self.buttons:
                 button.draw_button()
+
+        self.shield.draw_shield()
         pygame.display.flip()
         
 if __name__ == "__main__":

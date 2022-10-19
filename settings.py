@@ -24,10 +24,19 @@ class Settings:
         self.fleet_drop_speed = 8
         # -1: move left; 1: move right
         self.fleet_direction = -1
+        self.shoot_frequency = 0.002
+        self.alien_bullet_width = 3
+        self.alien_bullet_height = 10
+        self.alien_bullet_speed = 2.5
 
         # game tempo
         self.speedup_scale = 1.1
         self.level = 1.0
+
+        # shield
+        self.shield_color = (227,207,87)
+        self.shield_width = 32
+        self.shield_height = 7
 
         self.initialize_dynamic_settings()
     
